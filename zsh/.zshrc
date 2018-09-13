@@ -1,50 +1,18 @@
-# Source tmuxinator
-source ~/.bin/tmuxinator.zsh
-
-# fasd inits
-eval "$(fasd --init auto)"
-
-# TMUX_AUTOSTART
+# Automatically start a tmux session upon logging in.
 ZSH_TMUX_AUTOSTART="true"
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/kganguly/.oh-my-zsh
+export ZSH=/home/kanishka/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
-# ZSH_THEME="spaceship"
-
-source ~/.fonts/*.sh
-POWERLEVEL9K_MODE='awesome-fontconfig'
+#ZSH_THEME="agnoster"
+#ZSH_THEME="spaceship"
 ZSH_THEME="powerlevel9k/powerlevel9k"
-POWERLEVEL9K_BATTERY_CHARGING='yellow'
-POWERLEVEL9K_BATTERY_CHARGED='green'
-POWERLEVEL9K_BATTERY_DISCONNECTED='$DEFAULT_COLOR'
-POWERLEVEL9K_BATTERY_LOW_THRESHOLD='10'
-POWERLEVEL9K_BATTERY_LOW_COLOR='red'
-POWERLEVEL9K_BATTERY_ICON='\uf1e6 '
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=''
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='\uf0da'
-POWERLEVEL9K_VCS_GIT_ICON='\ue60a'
-POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='yellow'
-POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='yellow'
-POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
-POWERLEVEL9K_RAM_ELEMENTS='ram_free'
-POWERLEVEL9K_LINUX_ICON='\uf31b'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(status os_icon battery context dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time background_jobs ram)
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-#POWERLEVEL9K_CUSTOM_TIME_FORMAT="%D{\uf017 %H:%M:%S}"
-POWERLEVEL9K_TIME_FORMAT="%D{\uf017 %H:%M \uf073 %d.%m.%y}"
-POWERLEVEL9K_STATUS_VERBOSE=false
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -52,6 +20,36 @@ POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 # looking in ~/.oh-my-zsh/themes/
 # An empty array have no effect
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Poweline Customizations
+prompt_zsh_showStatus () {
+  state=`spotifycli --status`;
+  local color='%F{yellow}'
+  if [ $state = "Spotify service not found - is it running?" ]; then
+    
+  else
+    playing=`spotifycli --status`
+
+    echo -n "%{$color%}\U0001D160 $playing";
+  fi
+}
+
+POWERLEVEL9K_MODE='awesome-fontconfig'
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_VCS_GIT_ICON='\ue60a'
+POWERLEVEL9K_RAM_ELEMENTS='ram_free'
+POWERLEVEL9K_RAM_BACKGROUND='red'
+POWERLEVEL9K_RAM_FOREGROUND='black'
+POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
+POWERLEVEL9K_LINUX_ICON='\uf303'
+POWERLEVEL9K_TIME_FORMAT="%D{\uf017 %H:%M \uf073 %d.%m.%y}"
+POWERLEVEL9K_TIME_BACKGROUND='black'
+POWERLEVEL9K_TIME_FOREGROUND='yellow'
+POWERLEVEL9K_SHORTEN_STRATEGY="truncate_to_last"
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+POWERLEVEL9K_PYTHON_ICON='\U0001F40D'
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context dir virtualenv newline status load ram vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time zsh_showStatus)
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -86,7 +84,7 @@ COMPLETION_WAITING_DOTS="true"
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="mm/dd/yyyy"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -98,7 +96,7 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(
   git
   extract
-  fasd
+  z
   sublime
   web-search
   tmux
@@ -106,12 +104,18 @@ plugins=(
   command-not-found
   history
   sudo
-  bookmark
 )
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
+
+# OpenAI Gym
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/kanishka/.mujoco/mjpro150/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-396
+
+# ROS
+source /opt/ros/kinetic/setup.zsh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -119,11 +123,6 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='nano'
 else
@@ -131,7 +130,7 @@ else
 fi
 
 # Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+export ARCHFLAGS="-arch x86_64"
 
 # ssh
 export SSH_KEY_PATH="~/.ssh/rsa_id"
@@ -142,6 +141,7 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+alias downloads="cd /home/kanishka/Downloads"
+alias projects="cd /home/kanishka/Documents/Projects"
+alias zshconfig="subl ~/.zshrc"
 
