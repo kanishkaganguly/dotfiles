@@ -1,0 +1,198 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret home_lat
+  longitude: !secret home_long
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 20.29
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: America/New_York
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+# introduction:
+
+# Security
+http:
+    api_password: !secret http_pass
+    ip_ban_enabled: true
+    login_attempts_threshold: 10
+    ssl_certificate: /home/pi/external_access/dehydrated/certs/ganguly.duckdns.org/fullchain.pem
+    ssl_key: /home/pi/external_access/dehydrated/certs/ganguly.duckdns.org/privkey.pem
+    base_url: ganguly.duckdns.org:8123
+
+# Enables the frontend
+frontend:
+  themes: !include_dir_merge_named themes/
+# Enables configuration UI
+config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+# Sensor suite
+sensor:
+  - platform: darksky
+    api_key: !secret darksky_secret
+    name: "Forecast"
+    units: si
+    update_interval: '00:15'
+    monitored_conditions:
+    - summary
+    - icon
+    - temperature_high
+    - temperature_low 
+    - temperature
+    - humidity
+    - pressure
+    - wind_speed
+    - visibility
+    - precip_probability
+  - platform: time_date
+    display_options:
+    - 'time'
+    - 'date'
+  - platform: mqtt
+    name: "Temperature"
+    state_topic: "sensor/room/temperature"
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    name: "Humidity"
+    state_topic: "sensor/room/humidity"
+    unit_of_measurement: '%'
+  - platform: mqtt
+    name: "Noise"
+    state_topic: "sensor/room/noise/decibels"
+    unit_of_measurement: 'dB'
+  - platform: mqtt
+    name: "Light Intensity"
+    state_topic: "sensor/room/LightIntensity/x"
+    unit_of_measurement: 'lux'
+
+# Convert lux and decibels to binary states
+binary_sensor:
+  - platform: template
+    sensors:
+      light_on:
+        friendly_name: "Lights On"
+        device_class: light
+        value_template: "{{ states('sensor.light_intensity')|float > 90.0}}"
+      noise_on:
+        friendly_name: "Noise"
+        device_class: sound
+        delay_on:
+          seconds: 30
+        value_template: "{{ states('sensor.noise')|float > 0.0}}"
+
+weather:
+  - platform: darksky
+    api_key: !secret darksky_secret
+    name: "Weather"
+    units: si
+    monitored_conditions:
+    - summary
+    - precip_type
+    - icon
+    - humidity
+    - pressure
+    - hourly_summary
+    - temperature_high
+    - temperature_low
+    - temperature
+
+# Text to speech
+tts:
+  - platform: google
+
+# Cloud
+cloud:
+
+# Eufy
+eufy:
+  username: kanishkaganguly2002@gmail.com
+  password: !secret eufy_pass
+
+# IFTTT
+ifttt:
+  key: !secret ifttt_key
+
+# Emulated Hue
+emulated_hue:
+  host_ip: 192.168.2.16
+  listen_port: 80
+  off_maps_to_on_domains:
+    - script
+    - scene
+  expose_by_default: true
+  exposed_domains:
+    - light
+    - switch
+  entities:
+    switch.lamp:
+      name: "Lamp"
+    light.light_one:
+      name: "Light One"
+    light.light_two:
+      name: "Light Two"
+
+# Media Player: Spotify
+media_player:
+    - platform: spotify
+      client_id: 8b787871eea342a49263f53829b38a30
+      client_secret: !secret spotify_secret
+
+# Zones
+zone:
+    - name: Home
+      latitude: !secret home_lat
+      longitude: !secret home_long
+      radius: 250
+      icon: mdi:home
+    - name: Work
+      latitude: !secret work_lat
+      longitude: !secret work_long
+      radius: 250
+      icon: mdi:briefcase
+
+# MQTT
+mqtt:
+    broker: 192.168.2.16
+    port: 1883
+    username: "kganguly"
+    password: !secret mosquitto_pass
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml

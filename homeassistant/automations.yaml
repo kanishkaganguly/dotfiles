@@ -1,0 +1,32 @@
+- id: '1538182330960'
+  alias: Theme Change
+  trigger:
+  - event: start
+    platform: homeassistant
+  condition: []
+  action:
+  - data:
+      name: dark_theme
+    service: frontend.set_theme
+- id: '1538279449841'
+  alias: HomeAssistantOn
+  trigger:
+  - event: start
+    platform: homeassistant
+  condition: []
+  action:
+  - data:
+      event: home_assistant_state
+      value1: 'on'
+    service: ifttt.trigger
+- id: '1538279507762'
+  alias: HomeAssistantOff
+  trigger:
+  - event: shutdown
+    platform: homeassistant
+  condition: []
+  action:
+  - data:
+      event: home_assistant_state
+      value1: 'off'
+    service: ifttt.trigger
