@@ -1,0 +1,11 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =9
+let g:netrw_dirhist_1='/home/kanishka/Documents/Projects/QA_Project'
+let g:netrw_dirhist_2='/home/kanishka/Documents/Projects/QA_Project/comm_protocol'
+let g:netrw_dirhist_3='/home/kanishka/Documents/Projects/QA_Project/comm_protocol/src'
+let g:netrw_dirhist_4='/home/kanishka/Documents'
+let g:netrw_dirhist_5='/home/kanishka/Documents/Courses'
+let g:netrw_dirhist_6='/home/kanishka/Documents/Courses/ENPM673'
+let g:netrw_dirhist_7='/home/kanishka/Documents/Courses/ENPM673/2019'
+let g:netrw_dirhist_8='/home/kanishka/Documents/Courses/ENPM673/2019/P1'
+let g:netrw_dirhist_9='/home/kanishka/.config'
