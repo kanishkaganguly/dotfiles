@@ -26,6 +26,8 @@ Plugin 'Shougo/deoplete.nvim'
 Plugin 'Shougo/neosnippet.vim'
 Plugin 'Shougo/neosnippet-snippets'
 Plugin 'scrooloose/nerdtree'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 " All of your Plugins must be added before the following line
 call vundle#end()
 
@@ -41,6 +43,8 @@ let g:syntastic_python_pylint_exe = 'python3 -m pylint3'
 let g:deoplete#enable_at_startup = 1
 let g:python_host_prog = '/usr/bin/python'
 let g:python3_host_prog = '/usr/bin/python3'
+let g:airline_solarized_bg='dark'
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
