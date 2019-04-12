@@ -1,6 +1,14 @@
 # Automatically start a tmux session upon logging in.
 ZSH_TMUX_AUTOSTART="true"
 
+# nnn
+export TERM="xterm-256color" # For terminal colors with tmux
+export NNN_OPS_PROG=1 # show copy, move progress on Linux
+export NNN_OPENER=xdg-open # custom file opener
+export NNN_CONTEXT_COLORS='1234' # context specific colors
+export NNN_RESTRICT_0B=1 # don't open zero-byte files
+
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -26,10 +34,9 @@ prompt_zsh_showStatus () {
   state=`spotifycli --status`;
   local color='%F{yellow}'
   if [ $state = "Spotify service not found - is it running?" ]; then
-    
+    playing=`Not playing.`
   else
     playing=`spotifycli --status`
-
     echo -n "%{$color%}\U0001D160 $playing";
   fi
 }
@@ -45,11 +52,11 @@ POWERLEVEL9K_LINUX_ICON='\uf303'
 POWERLEVEL9K_TIME_FORMAT="%D{\uf017 %H:%M \uf073 %d.%m.%y}"
 POWERLEVEL9K_TIME_BACKGROUND='black'
 POWERLEVEL9K_TIME_FOREGROUND='yellow'
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_to_last"
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
 POWERLEVEL9K_PYTHON_ICON='\U0001F40D'
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context dir virtualenv newline status load ram vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time zsh_showStatus)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time)
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -68,7 +75,7 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time zsh_showStatus)
 # DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 ENABLE_CORRECTION="true"
@@ -126,7 +133,7 @@ source /opt/ros/kinetic/setup.zsh
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='nano'
 else
-  export EDITOR='subl'
+  export EDITOR='nvim'
 fi
 
 # Compilation flags
@@ -135,13 +142,34 @@ export ARCHFLAGS="-arch x86_64"
 # ssh
 export SSH_KEY_PATH="~/.ssh/rsa_id"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
 # Example aliases
 alias downloads="cd /home/kanishka/Downloads"
-alias projects="cd /home/kanishka/Documents/Projects"
+#alias projects="cd /home/kanishka/Documents/Projects"
 alias zshconfig="subl ~/.zshrc"
 
+# Projects
+projects() {
+    if [ -n "$1" ]
+    then
+        cd /home/kanishka/Documents/Projects/"$1"
+    else
+        cd /home/kanishka/Documents/Projects
+    fi
+}
+
+brightness() {
+    if [ "$1" = "left" ]; then
+        xrandr --output DP-0 --brightness $2
+    elif [ "$1" = "mid" ]; then
+        xrandr --output DVI-I-1 --brightness $2
+    elif [ "$1" = "right" ]; then
+        xrandr --output DP-2 --brightness $2
+    fi
+}
+
+# adb + emulator
+export PATH=/home/kanishka/Android/Sdk/platform-tools/:$PATH
+export PATH=/home/kanishka/Android/Sdk/emulator/:$PATH
+
+export G2O_DIR="/home/kanishka/Documents/Projects/g2o/install "
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
