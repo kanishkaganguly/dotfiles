@@ -118,11 +118,11 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 
 # OpenAI Gym
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/kanishka/.mujoco/mjpro150/bin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-396
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/kanishka/.mujoco/mjpro150/bin
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-396
 
 # ROS
-source /opt/ros/kinetic/setup.zsh
+#source /opt/ros/kinetic/setup.zsh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
