@@ -13,7 +13,7 @@ export NNN_RESTRICT_0B=1 # don't open zero-byte files
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/kanishka/.oh-my-zsh
+export ZSH=/home/$USER/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -131,7 +131,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nano'
+  export EDITOR='subl'
 else
   export EDITOR='nvim'
 fi
@@ -143,17 +143,16 @@ export ARCHFLAGS="-arch x86_64"
 export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 # Example aliases
-alias downloads="cd /home/kanishka/Downloads"
-#alias projects="cd /home/kanishka/Documents/Projects"
-alias zshconfig="subl ~/.zshrc"
+alias downloads="cd /home/$USER/Downloads"
+alias zshconfig="nvim ~/.zshrc"
 
 # Projects
 projects() {
     if [ -n "$1" ]
     then
-        cd /home/kanishka/Documents/Projects/"$1"
+        cd /home/$USER/Documents/Projects/"$1"
     else
-        cd /home/kanishka/Documents/Projects
+        cd /home/$USER/Documents/Projects
     fi
 }
 
@@ -168,8 +167,7 @@ brightness() {
 }
 
 # adb + emulator
-export PATH=/home/kanishka/Android/Sdk/platform-tools/:$PATH
-export PATH=/home/kanishka/Android/Sdk/emulator/:$PATH
+export PATH=/home/$USER/Android/Sdk/platform-tools/:$PATH
+export PATH=/home/$USER/Android/Sdk/emulator/:$PATH
 
-export G2O_DIR="/home/kanishka/Documents/Projects/g2o/install "
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
