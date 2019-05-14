@@ -122,7 +122,7 @@ source $ZSH/oh-my-zsh.sh
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-396
 
 # ROS
-#source /opt/ros/kinetic/setup.zsh
+source /opt/ros/$ROS_DISTRO/setup.zsh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -171,3 +171,6 @@ export PATH=/home/$USER/Android/Sdk/platform-tools/:$PATH
 export PATH=/home/$USER/Android/Sdk/emulator/:$PATH
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# added by travis gem
+[ -f /home/kanishka/.travis/travis.sh ] && source /home/kanishka/.travis/travis.sh
