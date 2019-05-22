@@ -1,5 +1,6 @@
 # Automatically start a tmux session upon logging in.
 ZSH_TMUX_AUTOSTART="true"
+ZSH_DISABLE_COMPFIX="true"
 
 # nnn
 export TERM="xterm-256color" # For terminal colors with tmux
