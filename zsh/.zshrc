@@ -112,6 +112,7 @@ plugins=(
   command-not-found
   history
   sudo
+  zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
