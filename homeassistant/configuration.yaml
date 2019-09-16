@@ -31,10 +31,6 @@ frontend:
 # Enables configuration UI
 config:
 
-# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
-# http:
-#   base_url: example.duckdns.org:8123
-
 # Checks for available updates
 # Note: This component will send some information about your system to
 # the developers to assist with development of Home Assistant.
@@ -62,13 +58,16 @@ map:
 # Track the sun
 sun:
 
+# System Health
+system_health:
+
 # Sensor suite
 sensor:
   - platform: darksky
     api_key: !secret darksky_secret
     name: "Forecast"
     units: si
-    update_interval: '00:15'
+    scan_interval: '00:15'
     monitored_conditions:
     - summary
     - icon
@@ -101,48 +100,33 @@ sensor:
     state_topic: "sensor/room/LightIntensity/x"
     unit_of_measurement: 'lux'
 
-# Convert lux and decibels to binary states
-binary_sensor:
-  - platform: template
-    sensors:
-      light_on:
-        friendly_name: "Lights On"
-        device_class: light
-        value_template: "{{ states('sensor.light_intensity')|float > 90.0}}"
-      noise_on:
-        friendly_name: "Noise"
-        device_class: sound
-        delay_on:
-          seconds: 30
-        value_template: "{{ states('sensor.noise')|float > 0.0}}"
-
 weather:
   - platform: darksky
     api_key: !secret darksky_secret
     name: "Weather"
     units: si
+
+# Thermostat
+nest:
+  client_id: 9f07bb33-513d-41ba-a09c-dedac6dfbaf7
+  client_secret: !secret nest_secret
+  sensors:
     monitored_conditions:
-    - summary
-    - precip_type
-    - icon
-    - humidity
-    - pressure
-    - hourly_summary
-    - temperature_high
-    - temperature_low
-    - temperature
+      - 'temperature'
+      - 'target'
 
 # Text to speech
 tts:
-  - platform: google
-
-# Cloud
-cloud:
+  - platform: google_translate
+    service_name: google_say
 
 # Eufy
 eufy:
   username: kanishkaganguly2002@gmail.com
   password: !secret eufy_pass
+
+# TP-Link
+tplink:
 
 # IFTTT
 ifttt:
@@ -150,7 +134,7 @@ ifttt:
 
 # Emulated Hue
 emulated_hue:
-  host_ip: 192.168.2.16
+  host_ip: 192.168.1.251
   listen_port: 80
   off_maps_to_on_domains:
     - script
@@ -167,11 +151,28 @@ emulated_hue:
     light.light_two:
       name: "Light Two"
 
+# GoogleAssistant
+google_assistant:
+  project_id: amplified-asset-229706
+  api_key: !secret google_key
+
 # Media Player: Spotify
 media_player:
     - platform: spotify
       client_id: 8b787871eea342a49263f53829b38a30
       client_secret: !secret spotify_secret
+    - platform: plex
+      show_all_controls: false
+      remove_unavailable_clients: true
+      client_remove_interval: 300
+
+# Groups
+light:
+  - platform: group
+    name: Ceiling Lights
+    entities:
+      - light.light_one
+      - light.light_two
 
 # Zones
 zone:
@@ -186,12 +187,38 @@ zone:
       radius: 250
       icon: mdi:briefcase
 
+# Device Tracking
+device_tracker:
+  - platform: bluetooth_tracker
+    consider_home: 60
+    interval_seconds: 15
+    new_device_defaults:
+      track_new_devices: false
+  - platform: quantum_gateway
+    host: 192.168.1.1
+    password: !secret fios_pass
+    consider_home: 60
+    interval_seconds: 15
+    new_device_defaults:
+      track_new_devices: false
+
 # MQTT
 mqtt:
-    broker: 192.168.2.16
+    broker: 192.168.1.251
     port: 1883
     username: "kganguly"
     password: !secret mosquitto_pass
+
+# Telegram
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_key
+    allowed_chat_ids:
+      - !secret telegram_chat_id
+notify:
+  - name: GangulyAssistant
+    platform: telegram
+    chat_id: !secret telegram_chat_id
 
 group: !include groups.yaml
 automation: !include automations.yaml

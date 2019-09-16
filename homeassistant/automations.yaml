@@ -1,3 +1,4 @@
+# Dark Theme
 - id: '1538182330960'
   alias: Theme Change
   trigger:
@@ -8,6 +9,8 @@
   - data:
       name: dark_theme
     service: frontend.set_theme
+
+# Notify via Telegram when Home Assistant turns on
 - id: '1538279449841'
   alias: HomeAssistantOn
   trigger:
@@ -15,10 +18,12 @@
     platform: homeassistant
   condition: []
   action:
-  - data:
-      event: home_assistant_state
-      value1: 'on'
-    service: ifttt.trigger
+    service: notify.gangulyassistant
+    data:
+      message: HomeAssistant turned ON at {{now().hour}}:{{now().minute}}:{{now().second}}
+        - {{now().month}}/{{now().day}}/{{now().year}}
+
+# Notify via Telegram when Home Assistant turns off
 - id: '1538279507762'
   alias: HomeAssistantOff
   trigger:
@@ -26,7 +31,106 @@
     platform: homeassistant
   condition: []
   action:
+    service: notify.gangulyassistant
+    data:
+      message: HomeAssistant turned OFF at {{now().hour}}:{{now().minute}}:{{now().second}}
+        - {{now().month}}/{{now().day}}/{{now().year}}
+
+# Process incoming IFTTT requests
+- id: 34163b1460ba400d8658714ab1a1d0a3
+  alias: IFTTT Automation
+  trigger:
+  - platform: event
+    event_type: ifttt_webhook_received
+    event_data:
+      action: call_service
+  action:
+  - service_template: '{{ trigger.event.data.service }}'
+    data_template:
+      entity_id: '{{ trigger.event.data.entity_id }}'
+
+# Turn off lights based on device tracking  
+- id: '1567562453415'
+  alias: Turn lights off when Away
+  trigger:
+  - entity_id: device_tracker.gangulyphonewifi
+    for: 00:00:30
+    from: home
+    platform: state
+    to: not_home
+  condition: []
+  action:
   - data:
-      event: home_assistant_state
-      value1: 'off'
-    service: ifttt.trigger
+      entity_id: switch.lamp
+    service: switch.turn_off
+  - data:
+      entity_id: switch.hallway_light
+    service: switch.turn_off
+
+# Turn on lights based on device tracking
+- id: '1567563177781'
+  alias: Turn lights on when Home
+  trigger:
+  - entity_id: device_tracker.gangulyphonewifi
+    for: 00:00:30
+    from: not_home
+    platform: state
+    to: home
+  condition: []
+  action:
+  - data:
+      entity_id: switch.lamp
+    service: switch.turn_on
+  - data:
+      entity_id: switch.hallway_light
+    service: switch.turn_on
+
+# Receive telegram command and send pre-recorded options
+- id: '1567625500174'
+  alias: TelegramControl
+  trigger:
+  - event_data:
+      command: /control
+    event_type: telegram_command
+    platform: event
+  condition: []
+  action:
+  - data:
+      data:
+        inline_keyboard:
+        - "Toggle lights:/toggle lights"
+        - "Toggle lamp:/toggle lamp"
+        - "Toggle hallway lights:/toggle hallway"
+      message: What would you like to control?
+    service: notify.gangulyassistant
+
+# Receive telegram command and perform actions
+- id: '1567628597237'
+  alias: TelegramResponse
+  trigger:
+    event_type: telegram_callback
+    platform: event
+    event_data:
+      command: toggle_"{{ trigger.event.data.data.split(" ")[1] }}"
+  action: 
+    service_template: >
+      {% set command_type = trigger.event.data["data"].split(" ")[1] %}
+      {% if 'lamp' or 'hallway' in command_type %}
+        switch.toggle
+      {% elif 'lights' in command_type %}
+        light.toggle
+      {% else %}
+      {% endif %}
+    data_template:
+      entity_id: >
+        {% set command_type = trigger.event.data["data"].split(" ")[1] %}
+        {% set light_arr = [ 'light.light_one', 'light.light_two' ] %}
+        {% if 'lamp' in command_type %}
+          switch.lamp
+        {% elif 'hallway' in command_type %}
+          switch.hallway_light
+        {% elif 'lights' in command_type %}
+          - light.light_one
+          - light.light_two
+        {% else %}
+        {% endif %}
