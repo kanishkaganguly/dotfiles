@@ -33,6 +33,9 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-scripts/vim-auto-save'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'preservim/nerdcommenter'
+Plugin 'Chiel92/vim-autoformat'
 " All of your Plugins must be added before the following line
 call vundle#end()
 

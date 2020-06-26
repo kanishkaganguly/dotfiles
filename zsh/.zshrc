@@ -171,6 +171,8 @@ brightness() {
 # adb + emulator
 export PATH=/home/$USER/Android/Sdk/platform-tools/:$PATH
 export PATH=/home/$USER/Android/Sdk/emulator/:$PATH
+# flutter
+export PATH="$PATH:/home/$USER/Projects/flutter/bin"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
