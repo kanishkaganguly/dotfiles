@@ -20,8 +20,8 @@ export ZSH=/home/$USER/.oh-my-zsh
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="agnoster"
-#ZSH_THEME="spaceship"
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="spaceship"
+#ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -42,22 +42,40 @@ prompt_zsh_showStatus () {
   fi
 }
 
-POWERLEVEL9K_MODE='awesome-fontconfig'
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_VCS_GIT_ICON='\ue60a'
-POWERLEVEL9K_RAM_ELEMENTS='ram_free'
-POWERLEVEL9K_RAM_BACKGROUND='red'
-POWERLEVEL9K_RAM_FOREGROUND='black'
-POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
-POWERLEVEL9K_LINUX_ICON='\uf303'
-POWERLEVEL9K_TIME_FORMAT="%D{\uf017 %H:%M \uf073 %d.%m.%y}"
-POWERLEVEL9K_TIME_BACKGROUND='black'
-POWERLEVEL9K_TIME_FOREGROUND='yellow'
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
-POWERLEVEL9K_PYTHON_ICON='\U0001F40D'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context dir virtualenv newline status load ram vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(time)
+# Spaceship Prompt
+SPACESHIP_PROMPT_ORDER=(
+    time
+    user
+    host
+    dir
+    exec_time
+    line_sep
+    git
+    docker
+    venv
+    exit_code
+    char
+)
+SPACESHIP_PROMPT_ADD_NEWLINE=true
+SPACESHIP_PROMPT_SEPARATE_LINE=true
+SPACESHIP_TIME_SHOW=true
+SPACESHIP_TIME_12HR=true
+SPACESHIP_USER_SHOW="always"
+SPACESHIP_USER_COLOR="green"
+SPACESHIP_USER_PREFIX=""
+SPACESHIP_USER_SUFFIX=""
+SPACESHIP_DIR_SHOW=true
+SPACESHIP_DIR_TRUNC=3
+SPACESHIP_HOST_SHOW="always"
+SPACESHIP_HOST_PREFIX="@"
+SPACESHIP_GIT_BRANCH_SHOW=true
+SPACESHIP_GIT_PREFIX="git:("
+SPACESHIP_GIT_SUFFIX=") "
+SPACESHIP_DOCKER_PREFIX="docker:("
+SPACESHIP_DOCKER_SUFFIX=") "
+SPACESHIP_DOCKER_SYMBOL="🐳 "
+SPACESHIP_EXEC_TIME_SHOW=true
+SPACESHIP_EXIT_CODE_SHOW=true
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
