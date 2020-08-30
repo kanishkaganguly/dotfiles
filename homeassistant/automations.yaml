@@ -1,4 +1,3 @@
-# Dark Theme
 - id: '1538182330960'
   alias: Theme Change
   trigger:
@@ -7,10 +6,8 @@
   condition: []
   action:
   - data:
-      name: dark_theme
+      name: slate
     service: frontend.set_theme
-
-# Notify via Telegram when Home Assistant turns on
 - id: '1538279449841'
   alias: HomeAssistantOn
   trigger:
@@ -22,8 +19,6 @@
     data:
       message: HomeAssistant turned ON at {{now().hour}}:{{now().minute}}:{{now().second}}
         - {{now().month}}/{{now().day}}/{{now().year}}
-
-# Notify via Telegram when Home Assistant turns off
 - id: '1538279507762'
   alias: HomeAssistantOff
   trigger:
@@ -35,8 +30,6 @@
     data:
       message: HomeAssistant turned OFF at {{now().hour}}:{{now().minute}}:{{now().second}}
         - {{now().month}}/{{now().day}}/{{now().year}}
-
-# Process incoming IFTTT requests
 - id: 34163b1460ba400d8658714ab1a1d0a3
   alias: IFTTT Automation
   trigger:
@@ -48,17 +41,14 @@
   - service_template: '{{ trigger.event.data.service }}'
     data_template:
       entity_id: '{{ trigger.event.data.entity_id }}'
-
-# Turn off lights based on device tracking  
 - id: '1567562453415'
   alias: Turn lights off when Away
   trigger:
-  - entity_id: device_tracker.gangulyphonewifi
+  - entity_id: device_tracker.kganguly_gangulyphone
     for: 00:00:30
     from: home
     platform: state
     to: not_home
-  condition: []
   action:
   - data:
       entity_id: switch.lamp
@@ -66,17 +56,17 @@
   - data:
       entity_id: switch.hallway_light
     service: switch.turn_off
-
-# Turn on lights based on device tracking
+  - data:
+      message: Bye!
+    service: notify.gangulyassistant
 - id: '1567563177781'
   alias: Turn lights on when Home
   trigger:
-  - entity_id: device_tracker.gangulyphonewifi
+  - entity_id: device_tracker.kganguly_gangulyphone
     for: 00:00:30
     from: not_home
     platform: state
     to: home
-  condition: []
   action:
   - data:
       entity_id: switch.lamp
@@ -84,53 +74,83 @@
   - data:
       entity_id: switch.hallway_light
     service: switch.turn_on
-
-# Receive telegram command and send pre-recorded options
+  - data:
+      message: Welcome home!
+    service: notify.gangulyassistant
 - id: '1567625500174'
-  alias: TelegramControl
+  alias: 'TelegramBot to control lights'
   trigger:
-  - event_data:
-      command: /control
-    event_type: telegram_command
     platform: event
+    event_type: telegram_command
+    event_data:
+      command: '/control'
+  action:
+    - service: notify.gangulyassistant
+      data:
+        message: "What would you like to control?"
+        data:       
+          inline_keyboard:
+            - Toggle lights:/toggle_lights
+            - Toggle floor lamp:/toggle_lamp
+            - Toggle desk lamp:/toggle_desk
+            - Toggle hallway lights:/toggle_hallway
+            - Toggle LED strip:/toggle_led
+- id: '1567628597237'
+  alias: 'Respond to control commands from TelegramBot'
+  trigger:
+    platform: event
+    event_type: telegram_callback
+  action:
+    - service: notify.gangulyassistant
+      data_template:
+        message: >
+          {% if  trigger.event.data.data.split('_')[1] == 'lamp' %}
+            Toggling floor lamp
+          {% elif  trigger.event.data.data.split('_')[1] == 'desk' %}
+            Toggling desk lamp
+          {% elif  trigger.event.data.data.split('_')[1] == 'hallway' %}
+            Toggling hallway lights
+          {% elif  trigger.event.data.data.split('_')[1] == 'led' %}
+            Toggling LED strip
+          {% elif  trigger.event.data.data.split('_')[1] == 'lights' %}
+            Toggling ceiling lights
+          {% endif %}
+    - service_template: >
+        {% if  trigger.event.data.data.split('_')[1] == 'lamp' %}
+          switch.toggle
+        {% elif  trigger.event.data.data.split('_')[1] == 'desk' %}
+          light.toggle
+        {% elif  trigger.event.data.data.split('_')[1] == 'hallway' %}
+          switch.toggle
+        {% elif  trigger.event.data.data.split('_')[1] == 'led' %}
+          switch.toggle
+        {% elif  trigger.event.data.data.split('_')[1] == 'lights' %}
+          light.toggle
+        {% endif %}
+      data_template:
+        entity_id: >
+          {% if  trigger.event.data.data.split('_')[1] == 'lamp' %}
+            switch.lamp
+          {% elif  trigger.event.data.data.split('_')[1] == 'desk' %}
+            light.desklamp
+          {% elif  trigger.event.data.data.split('_')[1] == 'hallway' %}
+            switch.hallway_light
+          {% elif  trigger.event.data.data.split('_')[1] == 'led' %}
+            switch.led_strip
+          {% elif  trigger.event.data.data.split('_')[1] == 'lights' %}
+            light.ceiling_lights
+          {% endif %}
+- id: '1577761812012'
+  alias: Plex Lights Out
+  description: ''
+  trigger:
+  - entity_id: media_player.plex_chrome
+    for: 00:00:10
+    from: paused
+    platform: state
+    to: playing
   condition: []
   action:
   - data:
-      data:
-        inline_keyboard:
-        - "Toggle lights:/toggle lights"
-        - "Toggle lamp:/toggle lamp"
-        - "Toggle hallway lights:/toggle hallway"
-      message: What would you like to control?
-    service: notify.gangulyassistant
-
-# Receive telegram command and perform actions
-- id: '1567628597237'
-  alias: TelegramResponse
-  trigger:
-    event_type: telegram_callback
-    platform: event
-    event_data:
-      command: toggle_"{{ trigger.event.data.data.split(" ")[1] }}"
-  action: 
-    service_template: >
-      {% set command_type = trigger.event.data["data"].split(" ")[1] %}
-      {% if 'lamp' or 'hallway' in command_type %}
-        switch.toggle
-      {% elif 'lights' in command_type %}
-        light.toggle
-      {% else %}
-      {% endif %}
-    data_template:
-      entity_id: >
-        {% set command_type = trigger.event.data["data"].split(" ")[1] %}
-        {% set light_arr = [ 'light.light_one', 'light.light_two' ] %}
-        {% if 'lamp' in command_type %}
-          switch.lamp
-        {% elif 'hallway' in command_type %}
-          switch.hallway_light
-        {% elif 'lights' in command_type %}
-          - light.light_one
-          - light.light_two
-        {% else %}
-        {% endif %}
+      entity_id: switch.lamp
+    service: switch.turn_off

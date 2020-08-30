@@ -16,14 +16,26 @@ homeassistant:
 # Show links to resources in log and frontend
 # introduction:
 
+# Mobile app
+mobile_app:
+
+# Logging
+logger:
+    default: warning
+    logs:
+        homeassistant.components.python_script: debug
 # Security
 http:
-    api_password: !secret http_pass
     ip_ban_enabled: true
     login_attempts_threshold: 10
-    ssl_certificate: /home/pi/external_access/dehydrated/certs/ganguly.duckdns.org/fullchain.pem
-    ssl_key: /home/pi/external_access/dehydrated/certs/ganguly.duckdns.org/privkey.pem
-    base_url: ganguly.duckdns.org:8123
+    ssl_certificate: /home/kganguly/external_access/dehydrated/certs/ganguly.duckdns.org/fullchain.pem
+    ssl_key: /home/kganguly/external_access/dehydrated/certs/ganguly.duckdns.org/privkey.pem
+    base_url: !secret external_url
+    use_x_forwarded_for: true
+    trusted_proxies:
+        - 127.0.0.1
+        - ::1
+        - 192.168.1.1
 
 # Enables the frontend
 frontend:
@@ -83,22 +95,54 @@ sensor:
     display_options:
     - 'time'
     - 'date'
+  - platform: systemmonitor
+    resources:
+        - type: memory_use_percent
+        - type: processor_use
   - platform: mqtt
-    name: "Temperature"
     state_topic: "sensor/room/temperature"
-    unit_of_measurement: '°C'
+    name: "Room Temperature"
+    unit_of_measurement: "°C"
   - platform: mqtt
-    name: "Humidity"
     state_topic: "sensor/room/humidity"
-    unit_of_measurement: '%'
-  - platform: mqtt
-    name: "Noise"
-    state_topic: "sensor/room/noise/decibels"
-    unit_of_measurement: 'dB'
-  - platform: mqtt
-    name: "Light Intensity"
-    state_topic: "sensor/room/LightIntensity/x"
-    unit_of_measurement: 'lux'
+    name: "Room Humidity"
+    unit_of_measurement: "%"
+  - platform: template
+    sensors:
+        kanishka_battery:
+            value_template: "{{ state_attr('device_tracker.kganguly_gangulyphone', 'battery_level') }}"
+            unit_of_measurement: '%'
+            friendly_name: "Kanishka Battery"
+ 
+        shruti_battery:
+            value_template: "{{ state_attr('device_tracker.sagarwal_shrutiphone', 'battery_level') }}"
+            unit_of_measurement: '%'
+            friendly_name: "Shruti Battery"
+
+# Speed test          
+speedtestdotnet:
+    server_id: 20229
+
+# Wyze Cams
+ffmpeg:
+camera:
+    - platform: ffmpeg
+      input: -rtsp_transport udp -i rtsp://kganguly:Blackfoot@192.168.1.69/live
+      name: Kitchen Cam
+    
+    - platform: ffmpeg
+      input: -rtsp_transport udp -i rtsp://kganguly:Blackfoot@192.168.1.154/live
+      name: Stairs Cam
+    
+    - platform: local_file
+      file_path: /home/kganguly/.homeassistant/images/mail_and_packages/mail_image/mail_today.gif
+      name: Mail Cam
+
+# MQTT
+mqtt:
+    broker: 192.168.1.167
+    username: kganguly
+    password: !secret mqtt_secret
 
 weather:
   - platform: darksky
@@ -134,7 +178,7 @@ ifttt:
 
 # Emulated Hue
 emulated_hue:
-  host_ip: 192.168.1.251
+  host_ip: 192.168.1.167
   listen_port: 80
   off_maps_to_on_domains:
     - script
@@ -150,21 +194,25 @@ emulated_hue:
       name: "Light One"
     light.light_two:
       name: "Light Two"
+    switch.gangulybeast:
+      name: "GangulyBeast"
 
-# GoogleAssistant
-google_assistant:
-  project_id: amplified-asset-229706
-  api_key: !secret google_key
+# Wake on LAN
+switch:
+    - platform: wake_on_lan
+      mac: "e0:d5:5e:a6:3b:fe"
+      host: "192.168.1.72"
+      name: "gangulybeast"
 
-# Media Player: Spotify
+# Media Players
 media_player:
-    - platform: spotify
-      client_id: 8b787871eea342a49263f53829b38a30
-      client_secret: !secret spotify_secret
     - platform: plex
       show_all_controls: false
       remove_unavailable_clients: true
       client_remove_interval: 300
+spotify: 
+    client_id: 8b787871eea342a49263f53829b38a30
+    client_secret: !secret spotify_secret
 
 # Groups
 light:
@@ -187,28 +235,6 @@ zone:
       radius: 250
       icon: mdi:briefcase
 
-# Device Tracking
-device_tracker:
-  - platform: bluetooth_tracker
-    consider_home: 60
-    interval_seconds: 15
-    new_device_defaults:
-      track_new_devices: false
-  - platform: quantum_gateway
-    host: 192.168.1.1
-    password: !secret fios_pass
-    consider_home: 60
-    interval_seconds: 15
-    new_device_defaults:
-      track_new_devices: false
-
-# MQTT
-mqtt:
-    broker: 192.168.1.251
-    port: 1883
-    username: "kganguly"
-    password: !secret mosquitto_pass
-
 # Telegram
 telegram_bot:
   - platform: polling
@@ -220,6 +246,9 @@ notify:
     platform: telegram
     chat_id: !secret telegram_chat_id
 
+# Python scripts
+python_script:
+# Other configs
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
