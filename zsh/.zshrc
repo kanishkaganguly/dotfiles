@@ -127,6 +127,18 @@ brightness() {
     fi
 }
 
+
 init_tmux(){
-	tmux new-window \; split-window -h \; split-window \; select-pane -t 1 \; split-window \; rename-window "$1" \;
+	# Check if no arguments passed
+	if [ $# -lt 2 ]; then
+		echo -e "\nPlease call '$0 <name of window> <create new window? (Y/N)'> to run this function!\n"
+		exit 1
+	else
+		if [[ "$2" =~ "Y|y" ]]; then
+			tmux new-window \; split-window -h \; split-window \; select-pane -t 1 \; split-window \; rename-window "$1" \;
+		elif [[ "$2" =~ "N|n" ]]
+		then
+			tmux split-window -h \; split-window \; select-pane -t 1 \; split-window \; rename-window "$1" \;
+		fi
+	fi
 }
