@@ -4,24 +4,13 @@ ZSH_DISABLE_COMPFIX="true"
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=/home/hand/Documents/Programs/raspi_tools/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH=/home/$USER/.oh-my-zsh
 
 # Set theme
 ZSH_THEME="spaceship"
-
-# Poweline Customizations
-prompt_zsh_showStatus () {
-  state=`spotifycli --status`;
-  local color='%F{yellow}'
-  if [ $state = "Spotify service not found - is it running?" ]; then
-    playing=`Not playing.`
-  else
-    playing=`spotifycli --status`
-    echo -n "%{$color%}\U0001D160 $playing";
-  fi
-}
 
 # Spaceship Prompt
 SPACESHIP_PROMPT_ORDER=(
@@ -94,7 +83,7 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 
 # ROS
-source /opt/ros/$ROS_DISTRO/setup.zsh
+# source /opt/ros/$ROS_DISTRO/setup.zsh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -138,13 +127,6 @@ brightness() {
     fi
 }
 
-# adb + emulator
-export PATH=/home/$USER/Android/Sdk/platform-tools/:$PATH
-export PATH=/home/$USER/Android/Sdk/emulator/:$PATH
-# flutter
-export PATH="$PATH:/home/$USER/Projects/flutter/bin"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# added by travis gem
-[ -f /home/kanishka/.travis/travis.sh ] && source /home/kanishka/.travis/travis.sh
+init_tmux(){
+	tmux new-window \; split-window -h \; split-window \; select-pane -t 1 \; split-window \;
+}
