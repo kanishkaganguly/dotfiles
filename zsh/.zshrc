@@ -128,5 +128,5 @@ brightness() {
 }
 
 init_tmux(){
-	tmux new-window \; split-window -h \; split-window \; select-pane -t 1 \; split-window \;
+	tmux new-window \; split-window -h \; split-window \; select-pane -t 1 \; split-window \; rename-window "$1" \;
 }
