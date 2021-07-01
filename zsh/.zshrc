@@ -4,7 +4,6 @@ ZSH_DISABLE_COMPFIX="true"
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=/home/hand/Documents/Programs/raspi_tools/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH=/home/$USER/.oh-my-zsh
@@ -114,6 +113,16 @@ projects() {
         cd /home/$USER/Documents/Projects/"$1"
     else
         cd /home/$USER/Documents/Projects
+    fi
+}
+
+# Programs
+programs() {
+    if [ -n "$1" ]
+    then
+        cd /home/$USER/Documents/Programs/"$1"
+    else
+        cd /home/$USER/Documents/Programs
     fi
 }
 
