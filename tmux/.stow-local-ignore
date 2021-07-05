@@ -1,0 +1,2 @@
+# Don't link the bash config, default is zsh
+.tmux.bash.conf
